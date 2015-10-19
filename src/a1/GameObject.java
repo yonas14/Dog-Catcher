@@ -47,6 +47,17 @@ public abstract class GameObject
     public void setLocation(Vector<Float> location) { //
         this.location = location;
     }
+    public void setRandomColor(){
+        Color c = new Color(randInt(0,255), randInt(0,255), randInt(0,255));
+        setColor(c);
+    }
+
+    public static int randInt(int min, int max){
+
+        Random rand = new Random();
+        int randNum= rand.nextInt((max-min)+1) +min;
+        return randNum;
+    }
 
     public void setLocation(float x, float y){
         location.set(0,x);
@@ -66,5 +77,8 @@ public abstract class GameObject
     public float getLocationY(){
         return location.get(1);
     }
+
+
+
 
 }

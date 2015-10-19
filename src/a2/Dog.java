@@ -1,4 +1,4 @@
-package a1;
+package a2;
 
 /**
  * Created by yoni on 9/15/15.
@@ -23,7 +23,7 @@ public class Dog extends Animal {
 
     @Override
     public String toString() {
-        return ("a1.Dog: loc="+getLocationX()+","+getLocationY()+" Color= "+getColor()+" Size="+ getSize()+" Speed= "+getSpeed()+ " dir="+getDirection()+ "scratches="+ getScratches() );
+        return ("a1.Dog: loc="+getLocationX()+","+getLocationY()+" Color= "+getColor()+" Size="+ getSize()+" Speed= "+getSpeed()+ " dir="+getDirection()+ " scratches="+ getScratches() );
 
     }
 }

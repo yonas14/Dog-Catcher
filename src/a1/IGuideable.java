@@ -5,5 +5,8 @@ package a1;
  */
 public interface IGuideable
 {
-
+    void moveRight();
+    void moveLeft();
+    void moveDown();
+    void moveUp();
 }
