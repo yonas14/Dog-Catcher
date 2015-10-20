@@ -66,6 +66,11 @@ public class GameWorld
 
     }
 
+    public int getSize(){
+
+        return gameObjList.size();
+    }
+
 
 
     private void createNets(){

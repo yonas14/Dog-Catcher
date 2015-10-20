@@ -26,16 +26,29 @@ public class Game extends JFrame implements ActionListener
     private JPanel left = new JPanel();
     private JPanel map = new JPanel();
 
-    private JButton expandNet = new JButton("Expand Net");
-    private JButton shrinkNet= new JButton("Shrink Net");
-    private JButton scoop = new JButton("scoop");
-    private JButton moveRight = new JButton("Move Right");
-    private JButton moveLeft = new JButton("Move Left");
-    private JButton moveUp = new JButton("Move Up");
-    private JButton moveDown = new JButton("Move Down");
-    private JButton kittenCollison = new JButton("Kitten Collision");
-    private JButton fight = new JButton("Dog/Cat collsion");
-    private JButton tick = new JButton("Tick");
+    private NetExpand nets=  new NetExpand();
+    private ShrinkNet shrink = new ShrinkNet();
+    private ScoopCmd scoopCmd = new ScoopCmd();
+    private NetMoveR netMoveR = new NetMoveR();
+    private NetMoveL netMoveL = new NetMoveL();
+    private NetMoveU netMoveU = new NetMoveU();
+    private NetMoveD netMoveD = new NetMoveD();
+    private KittenCollison kittenCollison = new KittenCollison();
+    private FightCmd fight = new FightCmd();
+    private TickCmd tick = new TickCmd();
+
+    private JButton expandNet = new JButton(nets);
+    private JButton shrinkNet= new JButton(shrink);
+    private JButton scoop = new JButton(scoopCmd);
+    private JButton moveRight = new JButton(netMoveR);
+    private JButton moveLeft = new JButton(netMoveL);
+    private JButton moveUp = new JButton(netMoveU);
+    private JButton moveDown = new JButton(netMoveD);
+    private JButton kittenCollisonB = new JButton(kittenCollison);
+    private JButton fightB = new JButton(fight);
+    private JButton tickB = new JButton(tick);
+
+
 
     public Game()
     {
@@ -55,8 +68,8 @@ public class Game extends JFrame implements ActionListener
 
 /////////////////The Panel on top for the points//////////////////////////////////
         top.setBorder(new LineBorder(Color.red, 2));   //Border of the layout
-        top.add(tick);
         add(top, BorderLayout.NORTH);
+        top.add(expandNet);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,28 +78,60 @@ public class Game extends JFrame implements ActionListener
         left.setBorder(new TitledBorder("Commands: "));   // border of the layout
         left.setLayout(new GridLayout(10, 1));        //attach action listeners
 
+/////////////////////////expand net//////////////////////////////////////////////////////////////
         left.add(expandNet);
+        nets.setGameWorld(gw);
+        expandNet.setAction(nets);
 
+///////////////////////////shrink net//////////////////////////////////////////////////////////////
         left.add(shrinkNet);
+        shrink.setGameWorld(gw);
+        shrinkNet.setAction(shrink);
+
+////////////////////////////scoop//////////////////////////////////////////////////////////
         left.add(scoop);
+        scoopCmd.setGameWorld(gw);
+        scoop.setAction(scoopCmd);
+
+/////////////////////////////move right////////////////////////////////////////////////////////////
         left.add(moveRight);
+        netMoveR.setGameWorld(gw);
+        moveRight.setAction(netMoveR);
+
+////////////////////////////move left///////////////////////////////////////////////////////////
         left.add(moveLeft);
+        netMoveL.setGameWorld(gw);
+        moveLeft.setAction(netMoveL);
+
+////////////////////////////move up////////////////////////////////////////////////////////////
         left.add(moveUp);
+        netMoveU.setGameWorld(gw);
+        moveUp.setAction(netMoveU);
+
+//////////////////////////move down///////////////////////////////////////////////////////////////
         left.add(moveDown);
-        left.add(kittenCollison);
-        left.add(fight);
-        left.add(tick);
+        netMoveD.setGameWorld(gw);
+        moveDown.setAction(netMoveD);
 
-        add(left, BorderLayout.WEST);
+///////////////////////////kitten collison/////////////////////////////////////////////////////////////
+        left.add(kittenCollisonB);
+        kittenCollison.setGameWorld(gw);
+        kittenCollisonB.setAction(kittenCollison);
+
+////////////////////////fight////////////////////////////////////////////////////////////////////
+        left.add(fightB);
+        fight.setGameWorld(gw);
+        fightB.setAction(fight);
+
+///////////////////////tick////////////////////////////////////////////////////////////////////
+        left.add(tickB);
+        tick.setGameWorld(gw);
+        tickB.setAction(tick);
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
+        add(left, BorderLayout.WEST); // add the panel holding the buttons
         setVisible(true);
-
-       // play();
+        play();
 
     }
 
