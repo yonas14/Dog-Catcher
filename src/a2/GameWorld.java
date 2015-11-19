@@ -3,12 +3,11 @@ package a2;
 import javax.xml.bind.ValidationException;
 import java.awt.*;
 import java.util.*;
-import java.util.Iterator;
 
 /**
  * Created by yoni on 9/15/15.
  */
-public class GameWorld
+public class GameWorld extends Observable
 {
     private Net net;
     private int dogPopulation,catPopulation;
@@ -25,46 +24,53 @@ public class GameWorld
     private float netYtopLeft;
     private float netYbottomRight;
     private float netbottomLeft;
+
+
+
     private int score;
     private int scratches;
+    private String onOff;
 
-    private ArrayList<IObserver> observer;
+
+    private Boolean soundF;
+
+
+
 
 
 
     public void initLayout()
     {
 
+
+
+
         gameObjList = new ObjectCollection();
         randDirection = new Random();
         System.out.println("Please enter the amount of Dogs");
         amount = new Scanner(System.in);
-        dogPopulation = amount.nextInt();
-
+        setDogPopulation(amount.nextInt());
         System.out.println("Please enter the amount of Cats");
-        catPopulation = amount.nextInt();
+        setCatPopulation(amount.nextInt());
+        updateObserver();
         createNets();
         createDogs();
         createCats();
         for (int i = 0; i < gameObjList.size(); i++) {
             System.out.println(gameObjList.get(i));
+
         }
     }
 
 
-    public void addObserver (IObserver obs){
-        observer = new ArrayList<IObserver>();
-        observer.add(obs);
 
+
+    private void updateObserver() {
+        setChanged();
+        notifyObservers();
     }
 
 
-
-    public void notifyObservers(){
-
-
-
-    }
 
     public int getSize(){
 
@@ -82,11 +88,12 @@ public class GameWorld
             gameObjList.addToCollection(net);
     }
     private void createDogs() { // this will add the dog inside the array List
-        for(int i = 0; i< dogPopulation; i++) {
+        for(int i = 0; i< getDogPopulation(); i++) {
             Dog dog = new Dog();
 
             dog.setSpeed(5);
             dog.setColor(Color.RED);
+            dog.setSize(5);
             dog.randLocation();
             dog.setDirection(randDirection.nextInt(360));
             gameObjList.addToCollection(dog);
@@ -94,11 +101,12 @@ public class GameWorld
     }
 
     private void createCats() { // this will add the dog inside the array List
-        for(int i = 0; i< catPopulation; i++) {
+        for(int i = 0; i< getCatPopulation(); i++) {
             Cat cat = new Cat();
 
             cat.setSpeed(5);
             cat.randLocation();
+            cat.setSize(5);
             cat.setColor(Color.BLACK);
             cat.setDirection(randDirection.nextInt(360));
             gameObjList.addToCollection(cat);
@@ -139,11 +147,13 @@ public class GameWorld
             if(gameObjList.get(i) instanceof Dog){
                 if ((((Dog) gameObjList.get(i)).getLocationX() > netXtopRight) && (((Dog) gameObjList.get(i)).getLocationX() < netYtopLeft) &&
                         (((Dog) gameObjList.get(i)).getLocationY() > netYbottomRight) && (((Dog) gameObjList.get(i)).getLocationY() < netbottomLeft)) {
-                     dogCaught++;
-                    dogPopulation--;
+                     setDogCaught(getDogCaught()+1);
+                    setDogPopulation((getDogPopulation())-1);
+
                     System.out.println("Dog Caught");
                     gameObjList.removeFromCollection(i);
-                    if (dogPopulation == 0) {
+
+                    if (getDogPopulation() == 0) {
                         System.out.print("Game Over Son");
 
                     }
@@ -152,12 +162,13 @@ public class GameWorld
 
 
         }
+        System.out.println(getDogPopulation());
         for (int i = 0; i < gameObjList.size() ; i++) {
             if(gameObjList.get(i) instanceof Cat){
                 if((((Cat) gameObjList.get(i)).getLocationX() > netXtopRight) && (((Cat) gameObjList.get(i)).getLocationX() < netYtopLeft) &&
                         (((Cat) gameObjList.get(i)).getLocationY() > netYbottomRight) && (((Cat) gameObjList.get(i)).getLocationY() < netbottomLeft)){
-                    catCaught++;
-                    catPopulation--;
+                   setCatCaught(getCatCaught()+1);
+                   setCatPopulation(getCatPopulation()-1);
                     System.out.println("Cat Caught");
 
                     gameObjList.removeFromCollection(i);
@@ -167,22 +178,29 @@ public class GameWorld
 
         }
 
+        print();
+
+
     }
 
     public void print(){
 
-        if (dogCaught < catCaught){
-                totalPoints = (dogCaught-catCaught)*10;
+        if (  getDogCaught() < getCatCaught()){
+            setTotalPoints((getDogCaught()-getCatCaught())*10);
+                //totalPoints =(dogCaught-catCaught)*10 ;
         }
-        if (catCaught < dogCaught){
-                totalPoints = (dogCaught-catCaught)*10;
+        if (getCatCaught() < getDogCaught()){
+            setTotalPoints((getDogCaught()-getCatCaught())*10);
+               // totalPoints = (dogCaught-catCaught)*10;
         }
         if (scratches > 0){
             for (int i = 0; i < scratches; i++) {
-                totalPoints = totalPoints - 1;
+                //TotalPoints = totalPoints - 1;
+                setTotalPoints(getTotalPoints() - 1);
 
             }
         }
+
 
         System.out.println  ("Score = "+totalPoints+
                             " Number of cats= "+catPopulation+
@@ -192,8 +210,62 @@ public class GameWorld
                             " Total amount scratches "+ scratches );
 
     }
+    public int getDogCaught() {
+        return dogCaught;
+    }
+
+    public void setDogCaught(int dogCaught) {
+        this.dogCaught = dogCaught;
+        updateObserver();
+    }
+
+    public int getCatCaught() {
+        return catCaught;
+    }
+
+    public void setCatCaught(int catCaught) {
+        this.catCaught = catCaught;
+        updateObserver();
+    }
+
+    public int getCatPopulation() {
+        return catPopulation;
+    }
+
+    public void setCatPopulation(int catPopulation) {
+        this.catPopulation = catPopulation;
+        updateObserver();
+    }
+
+    public int getDogPopulation() {
+        return dogPopulation;
+    }
+
+    public void setDogPopulation(int dogPopulation) {
+        this.dogPopulation = dogPopulation;
+        updateObserver();
+    }
+    public int getTotalPoints() {
+        return totalPoints;
+
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+        updateObserver();
+    }
+
+    public Boolean getSoundF() {
+        return soundF;
+
+    }
+
+    public void setSoundF(Boolean soundF) {
+        this.soundF = soundF;
+        updateObserver();
 
 
+    }
 
     public void right(){
         for (int i = 0; i <gameObjList.size() ; i++) {
@@ -246,9 +318,9 @@ public class GameWorld
 
     public void fight(){
         randScratch = new Random();
-        scratch = randScratch.nextInt(dogPopulation);
+        scratch = randScratch.nextInt(getDogPopulation());
 
-        for (int i = scratch; i <= dogPopulation ; i++) {
+        for (int i = scratch; i <= getDogPopulation() ; i++) {
             if (gameObjList.get(i)instanceof Dog && ((Dog) gameObjList.get(i)).getSpeed() != 0) {
                 ((Dog)gameObjList.get(i)).setSpeed(((Dog)gameObjList.get(i)).getSpeed() - 1);
                 ((Dog) gameObjList.get(i)).setScratches(((Dog)gameObjList.get(i)).getScratches() + 1);
@@ -262,27 +334,29 @@ public class GameWorld
     }
 
     public void makeKitten() {
-        if (catPopulation <= 1){
+        if (getCatPopulation() <= 1){
             System.out.println("you at least need two cats to make a kitten");
 
         }else {
             Cat cat = new Cat();
             cat.setSpeed(5);
             cat.randLocation();
+            cat.setSize(5);
             cat.setColor(Color.BLACK);
             cat.setDirection(randDirection.nextInt(360));
             gameObjList.addToCollection(cat);
-            catPopulation++;
+            setCatPopulation(getCatPopulation()+1);
         }
     }
 
-    public void map(){
-        for (int i = 0; i < gameObjList.size(); i++) {
-            System.out.println(gameObjList.get(i));
+    public void map() {
+        IIterator iterator = gameObjList.getIterator();
+        Object curObj = new Object();
+        while (iterator.hasNext()) {
+            curObj = iterator.getNext();
+            System.out.println(curObj.toString());
         }
-
     }
-
 
 
 }

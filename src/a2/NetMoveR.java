@@ -17,6 +17,7 @@ public class NetMoveR extends AbstractAction{
     public void actionPerformed(ActionEvent e) {
 
         gw.right();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

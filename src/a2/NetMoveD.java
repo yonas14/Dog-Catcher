@@ -17,6 +17,7 @@ public class NetMoveD extends AbstractAction{
     public void actionPerformed(ActionEvent e) {
 
         gw.down();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

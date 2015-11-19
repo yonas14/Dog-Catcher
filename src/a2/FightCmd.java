@@ -17,6 +17,7 @@ public class FightCmd extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
 
         gw.fight();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

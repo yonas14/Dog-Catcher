@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Scanner;
 
+
 /*
  * Created by yoni on 9/15/15.
  */
@@ -24,7 +25,7 @@ public class Game extends JFrame implements ActionListener
 
     private JPanel top = new JPanel();
     private JPanel left = new JPanel();
-    private JPanel map = new JPanel();
+    private JPanel center = new JPanel();
 
     private NetExpand nets=  new NetExpand();
     private ShrinkNet shrink = new ShrinkNet();
@@ -33,9 +34,13 @@ public class Game extends JFrame implements ActionListener
     private NetMoveL netMoveL = new NetMoveL();
     private NetMoveU netMoveU = new NetMoveU();
     private NetMoveD netMoveD = new NetMoveD();
-    private KittenCollison kittenCollison = new KittenCollison();
+    private KittenCollision kittenCollision = new KittenCollision();
     private FightCmd fight = new FightCmd();
     private TickCmd tick = new TickCmd();
+    private Quit quitCmd = new Quit();
+    private Sound soundCmd;
+    private About aboutCmd;
+
 
     private JButton expandNet = new JButton(nets);
     private JButton shrinkNet= new JButton(shrink);
@@ -44,20 +49,25 @@ public class Game extends JFrame implements ActionListener
     private JButton moveLeft = new JButton(netMoveL);
     private JButton moveUp = new JButton(netMoveU);
     private JButton moveDown = new JButton(netMoveD);
-    private JButton kittenCollisonB = new JButton(kittenCollison);
+    private JButton kittenCollisonB = new JButton(kittenCollision);
     private JButton fightB = new JButton(fight);
     private JButton tickB = new JButton(tick);
+
 
 
 
     public Game()
     {
         gw = new GameWorld();
-        mapView = new MapView();
-        scoreView= new ScoreView();
+        mapView = new MapView(gw);
+        scoreView= new ScoreView(gw);
+
         gw.initLayout();
-        gw.addObserver(mapView);
-        gw.addObserver(scoreView);
+
+        int mapName = JComponent.WHEN_IN_FOCUSED_WINDOW;
+        InputMap imap = left.getInputMap(mapName);
+        ActionMap amap = left.getActionMap();
+
 
 
         setTitle("Yonas");
@@ -66,10 +76,14 @@ public class Game extends JFrame implements ActionListener
         setLocation(200, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+
+
 /////////////////The Panel on top for the points//////////////////////////////////
         top.setBorder(new LineBorder(Color.red, 2));   //Border of the layout
+        top.setLayout(new GridLayout(1,7));
         add(top, BorderLayout.NORTH);
-        top.add(expandNet);
+        top.add(scoreView);
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,56 +96,167 @@ public class Game extends JFrame implements ActionListener
         left.add(expandNet);
         nets.setGameWorld(gw);
         expandNet.setAction(nets);
+        imap.put(KeyStroke.getKeyStroke('e'),"Expand"); //direction and scoop
+        amap.put("Expand", nets);
+
 
 ///////////////////////////shrink net//////////////////////////////////////////////////////////////
         left.add(shrinkNet);
         shrink.setGameWorld(gw);
         shrinkNet.setAction(shrink);
+        amap.put("Shrink", shrink);
+
 
 ////////////////////////////scoop//////////////////////////////////////////////////////////
         left.add(scoop);
         scoopCmd.setGameWorld(gw);
         scoop.setAction(scoopCmd);
+        imap.put(KeyStroke.getKeyStroke('s'),"Scoop"); //direction and scoop
+        amap.put("Scoop",scoopCmd);
+
 
 /////////////////////////////move right////////////////////////////////////////////////////////////
         left.add(moveRight);
         netMoveR.setGameWorld(gw);
         moveRight.setAction(netMoveR);
-
+        imap.put(KeyStroke.getKeyStroke('r'),"Move Right"); //direction and scoop
+        amap.put("Move", netMoveR);
+        amap.put("Move Right", netMoveR);
 ////////////////////////////move left///////////////////////////////////////////////////////////
         left.add(moveLeft);
         netMoveL.setGameWorld(gw);
         moveLeft.setAction(netMoveL);
 
+        imap.put(KeyStroke.getKeyStroke('l'),"Move Left"); //direction and scoop
+        amap.put("Move Left", netMoveL);
 ////////////////////////////move up////////////////////////////////////////////////////////////
         left.add(moveUp);
         netMoveU.setGameWorld(gw);
         moveUp.setAction(netMoveU);
+        imap.put(KeyStroke.getKeyStroke('u'),"Move Up"); //direction and scoop
+        amap.put("Move Up", netMoveU);
+
 
 //////////////////////////move down///////////////////////////////////////////////////////////////
         left.add(moveDown);
         netMoveD.setGameWorld(gw);
         moveDown.setAction(netMoveD);
+        imap.put(KeyStroke.getKeyStroke('d'),"Move Down"); //direction and scoop
+        amap.put("Move Down", netMoveD);
+
 
 ///////////////////////////kitten collison/////////////////////////////////////////////////////////////
         left.add(kittenCollisonB);
-        kittenCollison.setGameWorld(gw);
-        kittenCollisonB.setAction(kittenCollison);
+        kittenCollision.setGameWorld(gw);
+        kittenCollisonB.setAction(kittenCollision);
+        imap.put(KeyStroke.getKeyStroke('k'),"Collision"); //direction and scoop
+        amap.put("Collision", kittenCollision);
+
 
 ////////////////////////fight////////////////////////////////////////////////////////////////////
         left.add(fightB);
         fight.setGameWorld(gw);
         fightB.setAction(fight);
+        imap.put(KeyStroke.getKeyStroke('f'),"Fight"); //direction and scoop
+        amap.put("Fight", fight);
+
 
 ///////////////////////tick////////////////////////////////////////////////////////////////////
         left.add(tickB);
         tick.setGameWorld(gw);
         tickB.setAction(tick);
+        imap.put(KeyStroke.getKeyStroke('t'),"Tick"); //direction and scoop
+        amap.put("Tick", tick);
+        add(left, BorderLayout.WEST); // add the panel holding the buttons
+
+ ///////////////////////QUIT////////////////////////////////////////////////////////////////////
+        imap.put(KeyStroke.getKeyStroke('q'), "Quit");
+        amap.put("Quit", quitCmd);
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-        add(left, BorderLayout.WEST); // add the panel holding the buttons
+
+        center.setBorder(new LineBorder(Color.red, 2));   //Border of the layout
+        center.setLayout(new GridLayout(1,7));
+        add(center, BorderLayout.CENTER);
+        center.add(mapView);
+
+
+
+
+
+
+
+
+
+
+        JMenuBar menus = new JMenuBar();
+        JMenu mFile = new JMenu("File");
+        JMenuItem mFNewGame = new JMenuItem("New");
+        mFile.add(mFNewGame);
+        JMenuItem mFSaveGame = new JMenuItem("Save");
+        mFile.add(mFSaveGame);
+        JMenuItem mFUndoGame = new JMenuItem("Undo");
+        mFile.add(mFUndoGame);
+
+
+
+        JMenuItem mFSoundGame = new JCheckBoxMenuItem("Sound");
+        soundCmd = new Sound(gw);
+        gw.setSoundF(true);
+        mFSoundGame.setAction(soundCmd);
+        mFSoundGame.setSelected(true);
+        mFile.add(mFSoundGame);
+
+
+
+
+
+
+
+
+        JMenuItem mFAboutGame = new JMenuItem("About");
+        aboutCmd = new About();
+        mFAboutGame.setAction(aboutCmd);
+        mFile.add(mFAboutGame);
+        JMenuItem mFQuitGame = new JMenuItem("Quit");
+        quitCmd = new Quit();
+        mFQuitGame.setAction(quitCmd);
+        mFile.add(mFQuitGame);
+
+        menus.add(mFile);
+
+        JMenu mCommands = new JMenu("Commands");
+        JMenuItem mCEx = new JMenuItem("Expand Net");
+        mCEx.setAction(nets);
+        mCommands.add(mCEx);
+        JMenuItem mCShrink = new JMenuItem("Shrink Net");
+        mCShrink.setAction(shrink);
+        mCommands.add(mCShrink);
+        JMenuItem mCCollision = new JMenuItem("Collision/Kitten");
+        mCCollision.setAction(kittenCollision);
+        mCommands.add(mCCollision);
+        JMenuItem mCFight = new JMenuItem("Fight");
+        mCFight.setAction(fight);
+        mCommands.add(mCFight);
+        JMenuItem mCQuit = new JMenuItem("Quit");
+        mCQuit.setAction(quitCmd);
+        mCommands.add(mCQuit);
+
+        menus.add(mCommands);
+        this.setJMenuBar(menus);
+
+
+
+
+
+
+
+
+
         setVisible(true);
         play();
+        gw.setTotalPoints(0);
 
     }
 

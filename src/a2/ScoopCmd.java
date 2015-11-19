@@ -17,6 +17,8 @@ public class ScoopCmd extends AbstractAction{
     public void actionPerformed(ActionEvent e) {
 
         gw.scoop();
+        gw.map();
+
     }
 
     public void setGameWorld(GameWorld g){

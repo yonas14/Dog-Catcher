@@ -21,6 +21,7 @@ public class NetExpand extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
 
         gw.expand();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

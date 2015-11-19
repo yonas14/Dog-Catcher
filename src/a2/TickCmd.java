@@ -17,7 +17,7 @@ public class TickCmd extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
 
         gw.clockTick();
-        System.out.println("Game ticked Son");
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

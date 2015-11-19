@@ -18,6 +18,7 @@ public class NetMoveL extends AbstractAction{
     public void actionPerformed(ActionEvent e) {
 
         gw.left();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

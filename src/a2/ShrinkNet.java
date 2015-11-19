@@ -18,7 +18,8 @@ public class ShrinkNet extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        gw.expand();
+        gw.contract();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){

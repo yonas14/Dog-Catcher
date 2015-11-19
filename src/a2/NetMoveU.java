@@ -17,6 +17,7 @@ public class NetMoveU extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
 
         gw.up();
+        gw.map();
     }
 
     public void setGameWorld(GameWorld g){
