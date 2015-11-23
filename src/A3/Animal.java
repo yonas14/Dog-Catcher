@@ -13,8 +13,8 @@ public abstract class Animal extends GameObject implements IMoveable {
     private float tempY;
     private float dx;
     private float dy;
-    private final int WIDTH = 845;
-    private final int HEIGHT = 742;
+    private final int WIDTH = 894;
+    private final int HEIGHT = 950;
 
     public int getDirection()
     {
@@ -68,10 +68,11 @@ public abstract class Animal extends GameObject implements IMoveable {
         float deltaY = (float)Math.sin(90 - getDirection())*getSpeed();
         float newLocationX = (getLocationX()+deltaX);
         float newLocationY = (getLocationY()+deltaY);
-        System.out.println("IM HERE!");
+        //System.out.println("IM HERE!");
 
 
         if( newLocationX < WIDTH-(this.getSize()/2) && newLocationX > (this.getSize()/2) && newLocationY < HEIGHT-(this.getSize()/2) && newLocationY > (this.getSize()/2)){
+
             setLocation(newLocationX,newLocationY);
         }
         else{

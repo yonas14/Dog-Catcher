@@ -94,7 +94,7 @@ public class GameWorld implements IObservable
 
             dog.setSpeed(5);
             dog.setColor(Color.RED);
-            dog.setSize(5);
+            dog.setSize(50);
            // dog.setLocation(0+(dog.getSize()/2),0);
             dog.randLocation();
             dog.setDirection(randDirection.nextInt(360));
@@ -326,6 +326,7 @@ public class GameWorld implements IObservable
         randScratch = new Random();
         scratch = randScratch.nextInt(getDogPopulation());
 
+
         for (int i = scratch; i <= getDogPopulation() ; i++) {
             if (gameObjList.get(i)instanceof Dog && ((Dog) gameObjList.get(i)).getSpeed() != 0) {
                 ((Dog)gameObjList.get(i)).setSpeed(((Dog)gameObjList.get(i)).getSpeed() - 1);
@@ -387,4 +388,22 @@ public class GameWorld implements IObservable
         }
 
     }
+
+    public void healDogs() {
+        IIterator iterator = gameObjList.getIterator();
+        Object curObj = new Object();
+
+        //ONLY HEAL SELECTED DOGS
+        while(iterator.hasNext()){
+            curObj = iterator.getNext();
+            if(curObj instanceof Dog && ((Dog)curObj).isSelected()){
+                ((Dog) curObj).setSelected(false);
+                ((Dog) curObj).resetScratches();
+                ((Dog) curObj).setSpeed(5);
+                ((Dog) curObj).setColor(Color.BLUE);
+                notifyObservers();
+            }
+        }
+    }
+
 }

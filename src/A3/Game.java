@@ -4,15 +4,15 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Scanner;
 
 
 /*
  * Created by yoni on 9/15/15.
  */
-public class Game extends JFrame implements ActionListener
+
+public class Game extends JFrame implements ActionListener, MouseListener, MouseMotionListener
 {
     private GameWorld gw;
     private MapView mapView;
@@ -24,7 +24,10 @@ public class Game extends JFrame implements ActionListener
 
     private Timer timer;
 
+    private boolean isGamePaused;
+    private Point curMouse = null;
 
+    private Point startMouse = null;
 
     private JPanel top = new JPanel();
     private JPanel left = new JPanel();
@@ -37,8 +40,8 @@ public class Game extends JFrame implements ActionListener
     private NetMoveL netMoveL = new NetMoveL();
     private NetMoveU netMoveU = new NetMoveU();
     private NetMoveD netMoveD = new NetMoveD();
-    private KittenCollision kittenCollision = new KittenCollision();
-    private FightCmd fight = new FightCmd();
+    private Heal healCmd= new Heal();
+    private PauseCommand pauseCmd = new PauseCommand();
     private TickCmd tick = new TickCmd();
     private Quit quitCmd = new Quit();
     private Sound soundCmd;
@@ -52,8 +55,8 @@ public class Game extends JFrame implements ActionListener
     private JButton moveLeft = new JButton(netMoveL);
     private JButton moveUp = new JButton(netMoveU);
     private JButton moveDown = new JButton(netMoveD);
-    private JButton kittenCollisonB = new JButton(kittenCollision);
-    private JButton fightB = new JButton(fight);
+    private JButton heal = new JButton(healCmd);
+    private JButton pause = new JButton(pauseCmd);
     private JButton tickB = new JButton(tick);
 
 
@@ -70,6 +73,7 @@ public class Game extends JFrame implements ActionListener
         gw.addObserver(scoreView);
         gw.notifyObservers();
 
+        PauseCommand.setTarget(this);
 
 
 
@@ -80,9 +84,8 @@ public class Game extends JFrame implements ActionListener
         int mapName = JComponent.WHEN_IN_FOCUSED_WINDOW;
         InputMap imap = left.getInputMap(mapName);
         ActionMap amap = left.getActionMap();
-
         timer = new Timer(20,this);
-       timer.start();
+        timer.start();
 
         setTitle("Yonas");
         setSize(1024, 1024);
@@ -155,21 +158,15 @@ public class Game extends JFrame implements ActionListener
         amap.put("Move Down", netMoveD);
 
 
-///////////////////////////kitten collison/////////////////////////////////////////////////////////////
-        left.add(kittenCollisonB);
-        kittenCollision.setGameWorld(gw);
-        kittenCollisonB.setAction(kittenCollision);
-        imap.put(KeyStroke.getKeyStroke('k'),"Collision"); //direction and scoop
-        amap.put("Collision", kittenCollision);
 
+///////////////////////////Heal/////////////////////////////////////////////////////////////
+        left.add(heal);
+        healCmd.setGame(gw);
+        heal.setAction(healCmd);
 
-////////////////////////fight////////////////////////////////////////////////////////////////////
-        left.add(fightB);
-        fight.setGameWorld(gw);
-        fightB.setAction(fight);
-        imap.put(KeyStroke.getKeyStroke('f'),"Fight"); //direction and scoop
-        amap.put("Fight", fight);
-
+////////////////////////Pause////////////////////////////////////////////////////////////////////
+        left.add(pause);
+        pause.setAction(pauseCmd);
 
 ///////////////////////tick////////////////////////////////////////////////////////////////////
         left.add(tickB);
@@ -182,6 +179,7 @@ public class Game extends JFrame implements ActionListener
  ///////////////////////QUIT////////////////////////////////////////////////////////////////////
         imap.put(KeyStroke.getKeyStroke('q'), "Quit");
         amap.put("Quit", quitCmd);
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,11 +227,8 @@ public class Game extends JFrame implements ActionListener
         mCShrink.setAction(shrink);
         mCommands.add(mCShrink);
         JMenuItem mCCollision = new JMenuItem("Collision/Kitten");
-        mCCollision.setAction(kittenCollision);
+        mCCollision.setAction(healCmd);
         mCommands.add(mCCollision);
-        JMenuItem mCFight = new JMenuItem("Fight");
-        mCFight.setAction(fight);
-        mCommands.add(mCFight);
         JMenuItem mCQuit = new JMenuItem("Quit");
         mCQuit.setAction(quitCmd);
         mCommands.add(mCQuit);
@@ -370,5 +365,121 @@ public class Game extends JFrame implements ActionListener
     }
 
 
+    public boolean isPaused(){
+        return isGamePaused;
+    }
 
+    public void pauseGame(){
+        timer.stop();
+        isGamePaused = true;
+       // gw.stopBackGroundClip();
+        pause.setText("Play");
+
+        //ENABLE COMMANDS
+        heal.setEnabled(true);
+
+        //DISABLE COMMANDS
+        shrink.setEnabled(false);
+        moveDown.setEnabled(false);
+        expandNet.setEnabled(false);
+        moveLeft.setEnabled(false);
+        moveRight.setEnabled(false);
+        scoop.setEnabled(false);
+        tickB.setEnabled(false);
+        moveUp.setEnabled(false);
+        soundCmd.setEnabled(false);
+    }
+
+    public void resumeGame(){
+        timer.start();
+        //pause.setText("Pause");
+        isGamePaused = false;
+
+        //PLAY SOUND
+        if(gw.getSoundF()){
+            //gw.playBackGroundClip();
+        }
+
+        //ENABLE COMMANDS
+        shrink.setEnabled(true);
+        moveDown.setEnabled(true);
+        expandNet.setEnabled(true);
+        moveLeft.setEnabled(true);
+        moveRight.setEnabled(true);
+        scoop.setEnabled(true);
+        tickB.setEnabled(true);
+        moveUp.setEnabled(true);
+        soundCmd.setEnabled(true);
+
+        //DISABLE COMMANDS
+        heal.setEnabled(false);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+        startMouse = e.getPoint();
+        Point p = e.getPoint();
+
+        IIterator iterator = gw.getGameObjList().getIterator();
+        Object curObj;
+
+        while(iterator.hasNext() && isPaused()){
+            curObj = iterator.getNext();
+            if(curObj instanceof Dog){
+                if(((Dog)curObj).contains(p)){
+                    ((Dog)curObj).setSelected(true);
+                }
+                else if( e.isControlDown()){
+                    ((Dog)curObj).setSelected( ((Dog)curObj).isSelected() );
+                }
+                else{
+                    ((Dog)curObj).setSelected(false);
+                }
+            }
+        }
+        mapView.repaint();
+
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponents(g);
+        System.out.println("Yonas");
+        g.setColor (Color.YELLOW);
+        if(startMouse != null && curMouse != null) {
+            g.drawLine (startMouse.x, startMouse.y, curMouse.x, curMouse.y);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        //curMouse = e.getPoint();
+       // this.repaint();
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
 }

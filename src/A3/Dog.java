@@ -7,6 +7,7 @@ import java.awt.*;
  */
 public class Dog extends Animal implements IDrawable,ICollider {
 
+    private boolean selected;
 
     private int scratches;
 
@@ -22,6 +23,11 @@ public class Dog extends Animal implements IDrawable,ICollider {
         this.scratches = scratches;
     }
 
+    public void resetScratches() {
+        System.out.println("Scratch reseted");
+        scratches = 0;
+    }
+
 
     @Override
     public String toString() {
@@ -33,7 +39,8 @@ public class Dog extends Animal implements IDrawable,ICollider {
     public void draw(Graphics g,Dimension d) {
         g.setColor(getColor());
         //g.drawOval((int) getLocationX(), (int) getLocationY(), getSize(), getSize());
-        g.fillOval((int) getLocationX(), (int)getLocationY(),getSize()*20,getSize()*20);
+        g.drawOval((int) getLocationX(), (int) getLocationY(), 2, 2);
+        g.drawOval((int) getLocationX() - getSize()/2, (int)getLocationY()- getSize()/2,getSize(),getSize());
 
 
     }
@@ -62,7 +69,35 @@ public class Dog extends Animal implements IDrawable,ICollider {
     }
 
     @Override
-    public void handleCollision(GameObject otherObject) {
+    public void handleCollision(GameObject obj) {
+        if(obj instanceof Cat){
+            setColor(Color.blue);
 
+
+        }
+
+    }
+    public void setSelected(boolean select) {
+        selected = select;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+
+    public boolean contains(Point p) {
+        float x1, x2, y1, y2;
+        x1 = getLocationX()-(getSize()/2);
+        x2 = getLocationX()+(getSize()/2);
+        y1 = getLocationY()-(getSize()/2);
+        y2 = getLocationY()+(getSize()/2);
+
+        if(p.getX() >= x1 && p.getX() <= x2){
+            if(p.getY() >= y1 && p.getY() <= y2){
+                return true;
+            }
+        }
+        return false;
     }
 }

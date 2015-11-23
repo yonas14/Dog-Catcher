@@ -67,7 +67,7 @@ public abstract class GameObject
 
     public void randLocation(){
         rand = new Random();
-        this.setLocation(rand.nextFloat()*900,rand.nextFloat()*900);
+        this.setLocation(rand.nextFloat()*700,rand.nextFloat()*700);
 
     }
 

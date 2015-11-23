@@ -12,7 +12,7 @@ public class KittenCollision extends AbstractAction {
 
     public KittenCollision(){
 
-        super("Kitten Collision");
+        super("Heal");
     }
     @Override
     public void actionPerformed(ActionEvent e) {
