@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Created by yoni on 9/15/15.
  */
-public class Dog extends Animal implements IDrawable,ICollider {
+public class Dog extends Animal implements IDrawable, ISelectable {
 
     private boolean selected;
 
@@ -38,45 +38,12 @@ public class Dog extends Animal implements IDrawable,ICollider {
     @Override
     public void draw(Graphics g,Dimension d) {
         g.setColor(getColor());
-        //g.drawOval((int) getLocationX(), (int) getLocationY(), getSize(), getSize());
         g.drawOval((int) getLocationX(), (int) getLocationY(), 2, 2);
-        g.drawOval((int) getLocationX() - getSize()/2, (int)getLocationY()- getSize()/2,getSize(),getSize());
+        g.fillOval((int) getLocationX() - getSize()/2, (int)getLocationY()- getSize()/2,getSize(),getSize());
 
 
     }
 
-    @Override
-    public boolean collidesWith(GameObject obj) {
-        boolean result = false;
-        float thisCenterX = this.getLocationX() + (getSize()/2); // find centers
-        float thisCenterY = this.getLocationY() + (getSize()/2);
-
-        float otherCenterX = obj.getLocationX() + (obj.getSize()/2);
-        float otherCenterY = obj.getLocationY() + (obj.getSize()/2);
-
-        float dx = thisCenterX - otherCenterX;
-        float dy = thisCenterY - otherCenterY;
-        float distBetweenCentersSqr = (dx*dx + dy*dy);
-
-        int thisRadius = getSize()/2;
-        int otherRadius = obj.getSize()/2;
-
-        int radiiSqr = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
-
-        if (distBetweenCentersSqr <= radiiSqr) { result = true ; }
-
-        return result;
-    }
-
-    @Override
-    public void handleCollision(GameObject obj) {
-        if(obj instanceof Cat){
-            setColor(Color.blue);
-
-
-        }
-
-    }
     public void setSelected(boolean select) {
         selected = select;
     }
@@ -99,5 +66,19 @@ public class Dog extends Animal implements IDrawable,ICollider {
             }
         }
         return false;
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        int halfSize = getSize()/2;
+        System.out.println("I am here Yona ");
+        if(isSelected()){
+            g.setColor(Color.CYAN);
+            g.fillOval((int)getLocationX()- halfSize, (int)getLocationY() - halfSize, getSize(), getSize());
+        }else{
+            g.setColor(getColor());
+            g.fillOval((int)getLocationX()- halfSize, (int)getLocationY() - halfSize, getSize(), getSize());
+        }
+
     }
 }

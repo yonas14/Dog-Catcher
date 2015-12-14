@@ -68,6 +68,7 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
         mapView = new MapView();
         scoreView= new ScoreView();
 
+      //  scoreView.setTar
 
         gw.addObserver(mapView);
         gw.addObserver(scoreView);
@@ -76,9 +77,12 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
         PauseCommand.setTarget(this);
 
 
+        mapView.addMouseListener(this);
+        mapView.addMouseMotionListener(this);
+        center.add(mapView, BorderLayout.CENTER);
 
 
-
+        Sound.setTarget(gw);
         gw.initLayout();
 
         int mapName = JComponent.WHEN_IN_FOCUSED_WINDOW;
@@ -201,12 +205,18 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
         mFile.add(mFUndoGame);
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-        JMenuItem mFSoundGame = new JCheckBoxMenuItem("Sound");
-        soundCmd = new Sound(gw);
-        gw.setSoundF(true);
-        mFSoundGame.setAction(soundCmd);
-        mFSoundGame.setSelected(true);
-        mFile.add(mFSoundGame);
+//        JMenuItem mFSoundGame = new JCheckBoxMenuItem("Sound");
+//        soundCmd = new Sound(gw);
+//        gw.setSoundF(true);
+//        mFSoundGame.setAction(soundCmd);
+//        mFSoundGame.setSelected(true);
+//        mFile.add(mFSoundGame);
+
+
+        JCheckBoxMenuItem sound = new JCheckBoxMenuItem("Sound On/Off");
+        sound.setAction(Sound.getInstance());
+        sound.setState(false);
+        mFile.add(sound);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -372,7 +382,7 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
     public void pauseGame(){
         timer.stop();
         isGamePaused = true;
-       // gw.stopBackGroundClip();
+        gw.stopBackGroundClip();
         pause.setText("Play");
 
         //ENABLE COMMANDS
@@ -392,12 +402,13 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
 
     public void resumeGame(){
         timer.start();
-        //pause.setText("Pause");
+        pause.setText("Pause");
         isGamePaused = false;
 
         //PLAY SOUND
-        if(gw.getSoundF()){
-            //gw.playBackGroundClip();
+        if(gw.isSoundOn()){
+            System.out.println("Yonas audio");
+            gw.playBackGroundClip();
         }
 
         //ENABLE COMMANDS
@@ -431,11 +442,15 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
 
         while(iterator.hasNext() && isPaused()){
             curObj = iterator.getNext();
+          //  System.out.println(curObj);
             if(curObj instanceof Dog){
                 if(((Dog)curObj).contains(p)){
+
                     ((Dog)curObj).setSelected(true);
+                    ((Dog) curObj).setColor(Color.BLUE);
                 }
                 else if( e.isControlDown()){
+
                     ((Dog)curObj).setSelected( ((Dog)curObj).isSelected() );
                 }
                 else{
@@ -473,8 +488,8 @@ public class Game extends JFrame implements ActionListener, MouseListener, Mouse
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        //curMouse = e.getPoint();
-       // this.repaint();
+        curMouse = e.getPoint();
+        this.repaint();
 
     }
 

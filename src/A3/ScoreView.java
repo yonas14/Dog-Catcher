@@ -19,6 +19,7 @@ public class ScoreView extends JPanel implements IObserver {
     private JLabel catLeft;
     private JLabel sound;
 
+
     ScoreView(){
 
         setLayout(new GridLayout(1,10));
@@ -49,7 +50,15 @@ public class ScoreView extends JPanel implements IObserver {
         catLeft.setText("Cat Pop "+ gw.getCatPopulation());
         dogCaught.setText("Dog Arrested " + gw.getDogCaught());
         catCaught.setText("Cat Arrested " + gw.getCatCaught());
-        sound.setText("Sounds: " + gw.getSoundF());
+
+        Boolean a = gw.getSound();
+
+
+                    sound.setText("Sound: " + a );
+                //}//else{
+                  //  sound.setText("Sound: " + "OFF");
+
+               // }
 
     }
 }

@@ -5,7 +5,7 @@ package A3;
  */
 public interface ICollider {
 
-    boolean collidesWith(GameObject otherObject);
-    void handleCollision(GameObject otherObject);
+    boolean collidesWith(ICollider otherObject);
+    void handleCollision(ICollider otherObject);
 }
 

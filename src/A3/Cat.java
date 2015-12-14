@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Created by yoni on 9/15/15.
  */
-public class Cat extends Animal implements IDrawable, ICollider {
+public class Cat extends Animal implements IDrawable{
 
     @Override
     public String toString() {
@@ -52,40 +52,40 @@ public class Cat extends Animal implements IDrawable, ICollider {
         int [] xPts = new int [] {top.x, botLeft.x, botRight.x} ;
         int [] yPts = new int [] {top.y, botLeft.y, botRight.y} ;
 
-        g.drawPolygon(xPts, yPts, 3);
+        g.fillPolygon(xPts, yPts, 3);
 
     }
 
-    @Override
-    public boolean collidesWith(GameObject obj) {
+//    @Override
+//    public boolean collidesWith(GameObject obj) {
+//
+//        boolean result = false;
+//        float thisCenterX = this.getLocationX() + (getSize()/2); // find centers
+//        float thisCenterY = this.getLocationY() + (getSize()/2);
+//
+//        float otherCenterX = obj.getLocationX() + (obj.getSize()/2);
+//        float otherCenterY = obj.getLocationY() + (obj.getSize()/2);
+//
+//        float dx = thisCenterX - otherCenterX;
+//        float dy = thisCenterY - otherCenterY;
+//        float distBetweenCentersSqr = (dx*dx + dy*dy);
+//
+//        int thisRadius = getSize()/2;
+//        int otherRadius = obj.getSize()/2;
+//
+//        int radiiSqr = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
+//
+//        if (distBetweenCentersSqr <= radiiSqr) { result = true ; }
+//
+//        return result;
+//
+//    }
+//
+//    @Override
+//    public void handleCollision(GameObject obj) {
+//        if(obj instanceof Dog){
+//            obj.setColor(Color.gray);
+//        }
 
-        boolean result = false;
-        float thisCenterX = this.getLocationX() + (getSize()/2); // find centers
-        float thisCenterY = this.getLocationY() + (getSize()/2);
-
-        float otherCenterX = obj.getLocationX() + (obj.getSize()/2);
-        float otherCenterY = obj.getLocationY() + (obj.getSize()/2);
-
-        float dx = thisCenterX - otherCenterX;
-        float dy = thisCenterY - otherCenterY;
-        float distBetweenCentersSqr = (dx*dx + dy*dy);
-
-        int thisRadius = getSize()/2;
-        int otherRadius = obj.getSize()/2;
-
-        int radiiSqr = (thisRadius*thisRadius + 2*thisRadius*otherRadius + otherRadius*otherRadius);
-
-        if (distBetweenCentersSqr <= radiiSqr) { result = true ; }
-
-        return result;
-
-    }
-
-    @Override
-    public void handleCollision(GameObject obj) {
-        if(obj instanceof Dog){
-            obj.setColor(Color.gray);
-        }
-
-    }
+  //  }
 }

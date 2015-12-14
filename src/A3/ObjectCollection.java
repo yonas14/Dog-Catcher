@@ -44,6 +44,17 @@ public class ObjectCollection implements IObjectCollection {
           return theCollection.get(i);
       }
 
+    public int getIndex(Object obj){
+
+        for (int i = 0; i < theCollection.size() ; i++) {
+            if (theCollection.get(i) == obj){
+               return i;
+            }
+        }
+
+        return 0;
+    }
+
          private class GameObjectIterator implements IIterator{
              private int index;
 

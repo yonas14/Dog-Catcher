@@ -9,22 +9,35 @@ import java.awt.event.ActionEvent;
  */
 public class Sound extends AbstractAction {
 
-    private GameWorld gw;
-    public Sound(GameWorld gw){
+    private static Sound soundCommand;
+    private static GameWorld game;
 
-        super("Sound");
-        this.gw =(gw);
-
+    private Sound(){
+        super("Sound On/Off");
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    //ONLY ONE INSTANCE
+    public static Sound getInstance(){
+        if(soundCommand == null)
+            soundCommand = new Sound();
+        return soundCommand;
+    }
 
+    //FOR ACCESSING GAMEWORLD FUNCTIONS
+    public static void setTarget(GameWorld gw){
+       // if(game == null)
+            game = gw;
+    }
 
-        if(gw.getSoundF()){
-           gw.setSoundF(false);
-        }else{
-            gw.setSoundF(true);
+    //ACTUALLY PERFORM THE ACTION
+    public void actionPerformed(ActionEvent e){
+        game.toggleSound();
+
+        if(game.isSoundOn()){
+            game.turnOnSound();
+        }
+        else{
+            game.turnOffSound();
         }
     }
 }
